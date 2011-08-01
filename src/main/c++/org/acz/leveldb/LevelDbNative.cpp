@@ -9,12 +9,12 @@ static leveldb::DB *getDatabaseHandle(JNIEnv *env, jobject obj);
 static std::string *byteArrayToString(JNIEnv *env, jobject obj, jbyteArray array);
 
 JNIEXPORT jboolean JNICALL Java_org_acz_leveldb_LevelDbNative_open0
-    (JNIEnv *env, jobject obj, jstring pathParam)
+    (JNIEnv *env, jobject obj, jstring pathParam, jboolean create, jboolean exclusive)
 {
     leveldb::DB *db;
     leveldb::Options options;
-    options.create_if_missing = true;
-    options.error_if_exists = true;
+    options.create_if_missing = create;
+    options.error_if_exists = exclusive;
 
     const char *path = env->GetStringUTFChars(pathParam, NULL);
     leveldb::Status status = leveldb::DB::Open(options, path, &db);

@@ -14,7 +14,7 @@ public class LevelDbNative
 
     private String statusString;
 
-    private native boolean open0(String path);
+    private native boolean open0(String path, boolean create, boolean exclusive);
 
     private native void close0();
 
@@ -24,13 +24,30 @@ public class LevelDbNative
 
     private native boolean delete0(byte[] key);
 
-    public LevelDbNative(File path)
+    private LevelDbNative(File path, boolean create, boolean exclusive)
             throws LevelDbException
     {
-        if (!open0(path.getAbsolutePath())) {
-            System.out.println(statusString);
+        if (!open0(path.getAbsolutePath(), create, exclusive)) {
             throw new LevelDbException(statusString);
         }
+    }
+
+    public static LevelDbNative create(File path)
+            throws LevelDbException
+    {
+        return new LevelDbNative(path, true, true);
+    }
+
+    public static LevelDbNative update(File path)
+            throws LevelDbException
+    {
+        return new LevelDbNative(path, false, false);
+    }
+
+    public static LevelDbNative createOrUpdate(File path)
+            throws LevelDbException
+    {
+        return new LevelDbNative(path, true, false);
     }
 
     @Override
